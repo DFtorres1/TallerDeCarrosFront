@@ -44,7 +44,7 @@ const WaitList = () => {
 
   let formValues = Form.useWatch([], form);
 
-  const { data: reportsData } = useListReportsIn();
+  const { data: reportsData, refetch: reportRefetch } = useListReportsIn();
   const { data: employeeData, isSuccess: employeeSuccess } = useListEmployees();
   const { mutate: createReportOut, isSuccess: reportoutSuccess } =
     useCreateReportOut();
@@ -64,8 +64,9 @@ const WaitList = () => {
   }, [reportout]);
 
   useEffect(() => {
-    setModalVisible(false)
+    setModalVisible(false);
     reportoutSuccess ? form.resetFields() : null;
+    reportRefetch();
   }, [reportoutSuccess]);
 
   const handleReportOut = () => {

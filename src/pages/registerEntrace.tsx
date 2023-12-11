@@ -8,8 +8,15 @@ import TextArea from "antd/es/input/TextArea";
 import type { FormInstance } from "antd";
 import useCreateCar from "./hooks/useCreateVehicle";
 import useCreateReportIn from "./hooks/useCreateReportsIn";
+import { LoadingOutlined } from "@ant-design/icons";
 
-const SubmitButton = ({ form }: { form: FormInstance }) => {
+const SubmitButton = ({
+  form,
+  isLoading,
+}: {
+  form: FormInstance;
+  isLoading: Boolean;
+}) => {
   const [submittable, setSubmittable] = useState(false);
   const values = Form.useWatch([], form);
 
@@ -22,11 +29,16 @@ const SubmitButton = ({ form }: { form: FormInstance }) => {
         setSubmittable(false);
       }
     );
-  }, [values]);
+    if (isLoading) {
+      setSubmittable(false);
+    } else {
+      setSubmittable(true);
+    }
+  }, [values, isLoading]);
 
   return (
     <Button type="primary" htmlType="submit" disabled={!submittable}>
-      Agregar
+      {isLoading ? <LoadingOutlined /> : <>Agregar</>}
     </Button>
   );
 };
@@ -57,6 +69,7 @@ const RegisterEntrace = () => {
   const {
     mutate: createReportIn,
     //isError: reportError,
+    isLoading: reportinLoading,
     isSuccess: reportSuccess,
   } = useCreateReportIn();
 
@@ -65,12 +78,20 @@ const RegisterEntrace = () => {
   }, [currentBrand]);
 
   useEffect(() => {
-    handlesetReportIn();
-    createReportIn(reportin)
-    if (reportSuccess){
-      form.resetFields()
+    if (reportSuccess) {
+      form.resetFields();
     }
+  }, [reportSuccess]);
+
+  useEffect(() => {
+    handlesetReportIn();
   }, [carSuccess]);
+
+  useEffect(() => {
+    if (reportin?.plate) {
+      createReportIn(reportin);
+    }
+  }, [reportin]);
 
   useEffect(() => {
     if (vehicle?.plate) {
@@ -93,13 +114,14 @@ const RegisterEntrace = () => {
   };
 
   const handlesetReportIn = () => {
-    carData?
-    setReportin({
-      plate: carData[0]?.plate,
-      dni: formValues.worker,
-      inhour: formValues.inhour,
-      reason: formValues.reason,
-    }): null
+    carData
+      ? setReportin({
+          plate: carData[0]?.plate,
+          dni: formValues.worker,
+          inhour: formValues.inhour,
+          reason: formValues.reason,
+        })
+      : null;
   };
 
   return (
@@ -161,7 +183,7 @@ const RegisterEntrace = () => {
         </FormItem>
         <Form.Item>
           <Space onClick={handlesetCarIn}>
-            <SubmitButton form={form} />
+            <SubmitButton isLoading={reportinLoading} form={form} />
           </Space>
         </Form.Item>
       </Form>

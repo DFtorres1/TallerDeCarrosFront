@@ -27,7 +27,7 @@ const RegisterExit = () => {
             <br/>
             <strong>{"Fecha de salida: "}</strong>  {reportout.exithour}
             <br/>
-            <strong>{"Motivo"}</strong> + {reportout.reportIn?.reason}
+            <strong>{"Motivo:"}</strong>  {reportout.reportIn?.reason}
           </List.Item>
         )}
       />
